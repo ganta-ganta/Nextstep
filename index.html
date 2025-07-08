@@ -152,38 +152,43 @@
 </head>
 <body>
     <!-- Admin Login Button (Initially Hidden) -->
-    <div class="admin-toggle" id="adminToggle" style="display: none;">
-        <i class="fas fa-lock"></i> Admin
+<div class="admin-toggle" id="adminToggle" style="display: none;">
+    <i class="fas fa-lock"></i> Admin
+</div>
+
+<!-- Admin Panel -->
+<div class="admin-panel" id="adminPanel">
+    <div class="admin-header">
+        <h4>Admin Dashboard</h4>
+        <div>
+            <button class="btn btn-sm btn-danger me-2" id="logoutBtn">Logout</button>
+            <button class="btn btn-sm btn-secondary" id="closeAdminPanel">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
     </div>
     
-    <!-- Admin Panel -->
-    <div class="admin-panel" id="adminPanel">
-        <div class="admin-header">
-            <h4>Admin Dashboard</h4>
-            <button class="btn btn-sm btn-danger" id="logoutBtn">Logout</button>
+    <div id="loginForm" class="login-form">
+        <h4 class="text-center mb-4">Admin Login</h4>
+        <div class="mb-3">
+            <label for="adminEmail" class="form-label">Email</label>
+            <input type="email" class="form-control" id="adminEmail" placeholder="admin@example.com">
         </div>
-        
-        <div id="loginForm" class="login-form">
-            <h4 class="text-center mb-4">Admin Login</h4>
-            <div class="mb-3">
-                <label for="adminEmail" class="form-label">Email</label>
-                <input type="email" class="form-control" id="adminEmail" placeholder="admin@example.com">
-            </div>
-            <div class="mb-3">
-                <label for="adminPassword" class="form-label">Password</label>
-                <input type="password" class="form-control" id="adminPassword" placeholder="Password">
-            </div>
-            <button class="btn btn-primary w-100" id="loginBtn">Login</button>
+        <div class="mb-3">
+            <label for="adminPassword" class="form-label">Password</label>
+            <input type="password" class="form-control" id="adminPassword" placeholder="Password">
         </div>
-        
-        <div id="adminContent" style="display: none;">
-            <h5 class="mb-3">Form Submissions</h5>
-            <div class="mb-3">
-                <input type="text" class="form-control" id="searchSubmissions" placeholder="Search submissions...">
-            </div>
-            <div id="submissionsList"></div>
-        </div>
+        <button class="btn btn-primary w-100" id="loginBtn">Login</button>
     </div>
+    
+    <div id="adminContent" style="display: none;">
+        <h5 class="mb-3">Form Submissions</h5>
+        <div class="mb-3">
+            <input type="text" class="form-control" id="searchSubmissions" placeholder="Search submissions...">
+        </div>
+        <div id="submissionsList"></div>
+    </div>
+</div>
 
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
@@ -643,6 +648,10 @@
                     panel.style.display = 'block';
                 }
             });
+            // Close admin panel button
+document.getElementById('closeAdminPanel').addEventListener('click', function() {
+    document.getElementById('adminPanel').style.display = 'none';
+});
 
             // Login button - Only allows revanthgali7@gmail.com
             document.getElementById('loginBtn').addEventListener('click', function() {

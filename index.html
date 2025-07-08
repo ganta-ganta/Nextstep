@@ -10,6 +10,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Animate.css for simple animations -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
     <style>
         :root {
             --primary-blue: #0A2463;
@@ -92,9 +96,95 @@
             background-color: #25D366;
             color: white;
         }
+        
+        /* Admin Panel Styles */
+        .admin-panel {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 350px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .admin-toggle {
+            position: fixed;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            background: var(--primary-blue);
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+            z-index: 999;
+            border-radius: 5px 0 0 5px;
+        }
+        
+        .submission-card {
+            border-left: 4px solid var(--primary-blue);
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .login-form {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
+    <!-- Admin Login Button (Initially Hidden) -->
+    <div class="admin-toggle" id="adminToggle" style="display: none;">
+        <i class="fas fa-lock"></i> Admin
+    </div>
+    
+    <!-- Admin Panel -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-header">
+            <h4>Admin Dashboard</h4>
+            <button class="btn btn-sm btn-danger" id="logoutBtn">Logout</button>
+        </div>
+        
+        <div id="loginForm" class="login-form">
+            <h4 class="text-center mb-4">Admin Login</h4>
+            <div class="mb-3">
+                <label for="adminEmail" class="form-label">Email</label>
+                <input type="email" class="form-control" id="adminEmail" placeholder="admin@example.com">
+            </div>
+            <div class="mb-3">
+                <label for="adminPassword" class="form-label">Password</label>
+                <input type="password" class="form-control" id="adminPassword" placeholder="Password">
+            </div>
+            <button class="btn btn-primary w-100" id="loginBtn">Login</button>
+        </div>
+        
+        <div id="adminContent" style="display: none;">
+            <h5 class="mb-3">Form Submissions</h5>
+            <div class="mb-3">
+                <input type="text" class="form-control" id="searchSubmissions" placeholder="Search submissions...">
+            </div>
+            <div id="submissionsList"></div>
+        </div>
+    </div>
+
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">
@@ -127,11 +217,9 @@
                         <i class="fas fa-calendar-check me-2"></i>Book Free Consultation
                     </a>
                     <a href="https://wa.me/918919786478" target="_blank" class="btn whatsapp-btn me-2">Chat on WhatsApp</a>
-
-                    </a>
                 </div>
                 <div class="col-lg-6 animate__animated animate__fadeInRight">
-                    <img src="consultation.png"  class="img-fluid floating" alt="Study Abroad" style="max-height: 300px;">
+                    <img src="consultation.png" class="img-fluid floating" alt="Study Abroad" style="max-height: 300px;">
                 </div>
             </div>
         </div>
@@ -146,9 +234,6 @@
             </div>
             
             <div class="row g-4">
-                <!-- Update the country cards section with working links -->
-<div class="row g-4">
-  
                 <!-- USA Card -->
                 <div class="col-md-6 col-lg-3">
                     <div class="country-card usa-card p-4 h-100 animate__animated animate__fadeInUp">
@@ -208,7 +293,6 @@
                     <div class="country-card australia-card p-4 h-100 animate__animated animate__fadeInUp animate__delay-3s">
                         <div class="text-center mb-3">
                             <img src="https://cdn.countryflags.com/thumbs/australia/flag-400.png" style="height:80px" class="mb-3">
-                            
                             <h4>Australia</h4>
                         </div>
                         <ul class="list-unstyled">
@@ -385,7 +469,6 @@
                             <h5>Call Us</h5>
                             <p class="text-muted">
                                 <a href="tel:+918919786478" class="text-decoration-none">+91 891 978 6478</a><br>
-                                
                             </p>
                         </div>
                     </div>
@@ -410,18 +493,18 @@
                     <div class="card shadow">
                         <div class="card-body p-4">
                             <h4 class="card-title mb-4">Free Consultation</h4>
-                            <form>
+                            <form id="consultationForm">
                                 <div class="mb-3">
-                                    <input type="text" class="form-control" placeholder="Your Name" required>
+                                    <input type="text" class="form-control" id="name" placeholder="Your Name" required>
                                 </div>
                                 <div class="mb-3">
-                                    <input type="email" class="form-control" placeholder="Email Address" required>
+                                    <input type="email" class="form-control" id="email" placeholder="Email Address" required>
                                 </div>
                                 <div class="mb-3">
-                                    <input type="tel" class="form-control" placeholder="Phone Number" required>
+                                    <input type="tel" class="form-control" id="phone" placeholder="Phone Number" required>
                                 </div>
                                 <div class="mb-3">
-                                    <select class="form-select" required>
+                                    <select class="form-select" id="country" required>
                                         <option value="" disabled selected>Interested Country</option>
                                         <option>USA</option>
                                         <option>UK</option>
@@ -439,9 +522,6 @@
                             <div class="text-center mt-4">
                                 <p class="mb-2">Quick Connect:</p>
                                 <a href="https://wa.me/918919786478" target="_blank" class="btn whatsapp-btn me-2">Chat on WhatsApp</a>
-
-                                    
-                                </a>
                                 <a href="tel:+918919786478" class="btn btn-outline-primary">
                                     <i class="fas fa-phone-alt me-1"></i>Call Now
                                 </a>
@@ -489,32 +569,208 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Simple animation on scroll -->
+    
+    <!-- Firebase and Admin Panel JavaScript -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add animation class when element is in viewport
-            const animateElements = document.querySelectorAll('.animate__animated');
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCMvF42d4d1TJb1U8uOp3SStmpVn_ydwq8",
+            authDomain: "nextstep-551d5.firebaseapp.com",
+            projectId: "nextstep-551d5",
+            storageBucket: "nextstep-551d5.firebasestorage.app",
+            messagingSenderId: "172317308037",
+            appId: "1:172317308037:web:1306d55d48aacd139165ec",
+            measurementId: "G-VR0ZY0P8G7"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // Form submission handler
+        document.getElementById('consultationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add(entry.target.dataset.animate);
-                        observer.unobserve(entry.target);
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const country = document.getElementById('country').value;
+            const timestamp = new Date();
+            
+            // Add to Firestore
+            db.collection('consultations').add({
+                name: name,
+                email: email,
+                phone: phone,
+                country: country,
+                timestamp: timestamp
+            })
+            .then(() => {
+                alert('Thank you for your submission! We will contact you soon.');
+                document.getElementById('consultationForm').reset();
+            })
+            .catch((error) => {
+                console.error("Error adding document: ", error);
+                alert('There was an error submitting your form. Please try again.');
+            });
+        });
+
+        // Admin Panel Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is already logged in
+            auth.onAuthStateChanged(user => {
+                if (user && user.email === 'revanthgali7@gmail.com') {
+                    // User is signed in and has the correct email
+                    showAdminPanel();
+                    loadSubmissions();
+                    document.getElementById('adminToggle').style.display = 'block';
+                } else if (user) {
+                    // User is signed in but not the correct email
+                    auth.signOut();
+                } else {
+                    // Show admin toggle button
+                    document.getElementById('adminToggle').style.display = 'block';
+                }
+            });
+
+            // Admin toggle button
+            document.getElementById('adminToggle').addEventListener('click', function() {
+                const panel = document.getElementById('adminPanel');
+                if (panel.style.display === 'block') {
+                    panel.style.display = 'none';
+                } else {
+                    panel.style.display = 'block';
+                }
+            });
+
+            // Login button - Only allows revanthgali7@gmail.com
+            document.getElementById('loginBtn').addEventListener('click', function() {
+                const email = document.getElementById('adminEmail').value;
+                const password = document.getElementById('adminPassword').value;
+                
+                // Check if the email is the authorized admin email
+                if (email !== 'revanthgali7@gmail.com') {
+                    alert('Access restricted. Only authorized administrators can login.');
+                    return;
+                }
+                
+                auth.signInWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        // Double check the email after successful login
+                        if (userCredential.user.email === 'revanthgali7@gmail.com') {
+                            showAdminPanel();
+                            loadSubmissions();
+                        } else {
+                            auth.signOut();
+                            alert('Access denied. Only revanthgali7@gmail.com can access the admin panel.');
+                        }
+                    })
+                    .catch((error) => {
+                        alert('Login failed: ' + error.message);
+                    });
+            });
+
+            // Logout button
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                auth.signOut().then(() => {
+                    document.getElementById('loginForm').style.display = 'block';
+                    document.getElementById('adminContent').style.display = 'none';
+                    document.getElementById('adminPanel').style.display = 'none';
+                });
+            });
+
+            // Search functionality
+            document.getElementById('searchSubmissions').addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const submissions = document.querySelectorAll('.submission-card');
+                
+                submissions.forEach(submission => {
+                    const text = submission.textContent.toLowerCase();
+                    if (text.includes(searchTerm)) {
+                        submission.style.display = 'block';
+                    } else {
+                        submission.style.display = 'none';
                     }
                 });
-            }, { threshold: 0.1 });
-            
-            animateElements.forEach(el => {
-                observer.observe(el);
             });
+        });
+
+        function showAdminPanel() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('adminContent').style.display = 'block';
+            document.getElementById('adminPanel').style.display = 'block';
+        }
+
+        function loadSubmissions() {
+            const user = auth.currentUser;
             
-            // Smooth scrolling for anchor links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    document.querySelector(this.getAttribute('href')).scrollIntoView({
-                        behavior: 'smooth'
+            // Double check the email (even though rules already protect this)
+            if (user && user.email === 'revanthgali7@gmail.com') {
+                db.collection('consultations').orderBy('timestamp', 'desc').onSnapshot(snapshot => {
+                    const submissionsList = document.getElementById('submissionsList');
+                    submissionsList.innerHTML = '';
+                    
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        const date = data.timestamp.toDate().toLocaleString();
+                        
+                        const card = document.createElement('div');
+                        card.className = 'submission-card';
+                        card.innerHTML = `
+                            <h6>${data.name}</h6>
+                            <p><strong>Phone:</strong> ${data.phone}<br>
+                            <strong>Email:</strong> ${data.email}<br>
+                            <strong>Country:</strong> ${data.country}<br>
+                            <small class="text-muted">${date}</small></p>
+                            <button class="btn btn-sm btn-outline-danger delete-btn" data-id="${doc.id}">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        `;
+                        
+                        submissionsList.appendChild(card);
                     });
+                    
+                    // Add event listeners to delete buttons
+                    document.querySelectorAll('.delete-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const id = this.getAttribute('data-id');
+                            if (confirm('Are you sure you want to delete this submission?')) {
+                                db.collection('consultations').doc(id).delete()
+                                    .then(() => console.log('Document deleted'))
+                                    .catch(error => console.error('Error deleting document: ', error));
+                            }
+                        });
+                    });
+                });
+            } else {
+                alert('Unauthorized access');
+                auth.signOut();
+            }
+        }
+
+        // Simple animation on scroll
+        const animateElements = document.querySelectorAll('.animate__animated');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add(entry.target.dataset.animate);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        animateElements.forEach(el => {
+            observer.observe(el);
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
                 });
             });
         });

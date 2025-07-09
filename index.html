@@ -19,6 +19,153 @@
             --primary-blue: #0A2463;
             --accent-gold: #FFD700;
         }
+        .contact-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        
+        .agent-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: none;
+        }
+        
+        .agent-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .agent-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 15px 20px;
+            position: relative;
+        }
+        
+        .agent-name {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin: 0;
+        }
+        
+        .agent-position {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            margin: 5px 0 0;
+        }
+        
+        .agent-body {
+            padding: 20px;
+        }
+        
+        .contact-method {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            background-color: rgba(67, 97, 238, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--primary-color);
+            font-size: 1rem;
+        }
+        
+        .contact-info {
+            flex: 1;
+        }
+        
+        .contact-label {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-bottom: 2px;
+        }
+        
+        .contact-value {
+            font-weight: 500;
+            color: var(--text-color);
+            margin: 0;
+        }
+        
+        .contact-value a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .contact-value a:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-contact {
+            flex: 1;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        
+        .btn-contact:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #f0f4ff;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--text-color);
+            position: relative;
+        }
+        
+        .section-title:after {
+            content: "";
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            margin: 10px auto 0;
+        }
+        
+        @media (max-width: 768px) {
+            .contact-container {
+                padding: 10px;
+            }
+            
+            .agent-card {
+                margin-bottom: 15px;
+            }
+        }
         
         body {
             font-family: 'Poppins', sans-serif;
@@ -474,33 +621,99 @@
         </div>
     </section>
 
-    <div class="card contact-card" style="width: 18rem;">
-  <div class="card-header bg-primary text-white">
-    <h5 class="card-title mb-0">Contact Our Agents</h5>
-  </div>
-  <div class="card-body">
-    <div class="agent-contact">
-      <h6 class="agent-name">Udaybaskar</h6>
-      <p class="agent-email">
-        <i class="fas fa-envelope"></i> 
-        <a href="mailto:udaybaskar@nextstepoverseasconsultz.in">udaybaskar@nextstepoverseasconsultz.in</a>
-      </p>
+    <div class="contact-container">
+        <h2 class="section-title">Contact Our Agents</h2>
+        
+        <div class="row">
+            <!-- Agent 1 -->
+            <div class="col-md-6">
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <h3 class="agent-name">Udaybaskar</h3>
+                        <p class="agent-position">Senior Immigration Consultant</p>
+                    </div>
+                    <div class="agent-body">
+                        <div class="contact-method">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-info">
+                                <p class="contact-label">Email</p>
+                                <p class="contact-value">
+                                    <a href="mailto:udaybaskar@nextstepoverseasconsultz.in">udaybaskar@nextstepoverseasconsultz.in</a>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-method">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone-alt"></i>
+                            </div>
+                            <div class="contact-info">
+                                <p class="contact-label">Phone</p>
+                                <p class="contact-value">
+                                    <a href="tel:+911234567890">+91 12345 67890</a>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button class="btn btn-contact">
+                                <i class="fas fa-paper-plane"></i> Send Message
+                            </button>
+                            <button class="btn btn-contact btn-secondary">
+                                <i class="fas fa-calendar-alt"></i> Schedule Call
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Agent 2 -->
+            <div class="col-md-6">
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <h3 class="agent-name">Revanth</h3>
+                        <p class="agent-position">Visa Processing Specialist</p>
+                    </div>
+                    <div class="agent-body">
+                        <div class="contact-method">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-info">
+                                <p class="contact-label">Email</p>
+                                <p class="contact-value">
+                                    <a href="mailto:revanth@nextstepoverseasconsultz.in">revanth@nextstepoverseasconsultz.in</a>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-method">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone-alt"></i>
+                            </div>
+                            <div class="contact-info">
+                                <p class="contact-label">Phone</p>
+                                <p class="contact-value">
+                                    <a href="tel:+919876543210">+91 98765 43210</a>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <button class="btn btn-contact">
+                                <i class="fas fa-paper-plane"></i> Send Message
+                            </button>
+                            <button class="btn btn-contact btn-secondary">
+                                <i class="fas fa-calendar-alt"></i> Schedule Call
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    
-    <hr>
-    
-    <div class="agent-contact">
-      <h6 class="agent-name">Revanth</h6>
-      <p class="agent-email">
-        <i class="fas fa-envelope"></i> 
-        <a href="mailto:revanth@nextstepoverseasconsultz.in">revanth@nextstepoverseasconsultz.in</a>
-      </p>
-    </div>
-  </div>
-  <div class="card-footer bg-light">
-    <small class="text-muted">Next Step Overseas Consultants</small>
-  </div>
-</div>
 
     <!-- Contact Section -->
     <section id="contact" class="py-5">
@@ -817,6 +1030,19 @@ document.getElementById('closeAdminPanel').addEventListener('click', function() 
                 auth.signOut();
             }
         }
+        // Add dynamic functionality here
+        document.querySelectorAll('.btn-contact').forEach(button => {
+            button.addEventListener('click', function() {
+                const agentName = this.closest('.agent-card').querySelector('.agent-name').textContent;
+                
+                if (this.textContent.includes('Send Message')) {
+                    const email = this.closest('.agent-card').querySelector('.contact-value a').href;
+                    window.location.href = email;
+                } else {
+                    alert(`Schedule a call with ${agentName} - This would open a calendar booking system in a real implementation.`);
+                }
+            });
+        });
 
         // Simple animation on scroll
         const animateElements = document.querySelectorAll('.animate__animated');
